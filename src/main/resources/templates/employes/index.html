@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des Employés</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+  <div class="container">
+    <a class="navbar-brand fw-bold" th:href="@{/dashboard}">DELFYO</a>
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/dashboard}">Tableau de bord</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" th:href="@{/employes}">Employés</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/postes}">Postes</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/departements}">Départements</a>
+        </li>
+        <!-- تم إضافة رابط التاريخ هنا (يظهر فقط للمدير ADMIN) -->
+        <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+          <a class="nav-link" th:href="@{/audit-logs}">
+            <i class="bi bi-clock-history me-1"></i> Historique (Audit)
+          </a>
+        </li>
+      </ul>
+      <form th:action="@{/logout}" method="post" class="d-flex">
+        <button class="btn btn-outline-danger btn-sm" type="submit">Déconnexion</button>
+      </form>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Gestion des Employés</h2>
+        <div>
+            <a th:href="@{/employes/export/excel}" class="btn btn-success me-2">Exporter Excel</a>
+            <a th:href="@{/employes/export/pdf}" class="btn btn-danger me-2">Exporter PDF</a>
+            <a th:href="@{/employes/ajouter}" class="btn btn-primary">+ Ajouter un employé</a>
+        </div>
+    </div>
+
+    <!-- Formulaire de Recherche & Filtrage -->
+    <form method="get" th:action="@{/employes}" class="row g-2 mb-4 bg-white p-3 rounded shadow-sm">
+        <input type="hidden" name="sortField" th:value="${sortField}">
+        <input type="hidden" name="sortDir" th:value="${sortDir}">
+        
+        <div class="col-md-4">
+            <input type="text" name="keyword" th:value="${keyword}" class="form-control" placeholder="Rechercher par nom, prénom, email...">
+        </div>
+        <div class="col-md-3">
+            <select name="departementId" class="form-select">
+                <option value="">Tous les départements</option>
+                <option th:each="d : ${departements}" th:value="${d.id}" th:text="${d.nom}" th:selected="${d.id == departementId}"></option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="posteId" class="form-select">
+                <option value="">Tous les postes</option>
+                <option th:each="p : ${postes}" th:value="${p.id}" th:text="${p.intitule}" th:selected="${p.id == posteId}"></option>
+            </select>
+        </div>
+        <div class="col-md-2 d-grid">
+            <button type="submit" class="btn btn-secondary">Filtrer</button>
+        </div>
+    </form>
+
+    <!-- Tableau des Employés -->
+    <table class="table table-bordered table-striped shadow-sm bg-white align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Photo</th>
+                <th>
+                    <a class="text-white text-decoration-none" 
+                       th:href="@{/employes(page=${currentPage}, keyword=${keyword}, departementId=${departementId}, posteId=${posteId}, sortField='nom', sortDir=${sortField == 'nom' ? reverseSortDir : 'asc'})}">
+                        Nom <i class="bi bi-arrow-down-up ms-1"></i>
+                    </a>
+                </th>
+                <th>
+                    <a class="text-white text-decoration-none" 
+                       th:href="@{/employes(page=${currentPage}, keyword=${keyword}, departementId=${departementId}, posteId=${posteId}, sortField='email', sortDir=${sortField == 'email' ? reverseSortDir : 'asc'})}">
+                        Email <i class="bi bi-arrow-down-up ms-1"></i>
+                    </a>
+                </th>
+                <th>Département</th>
+                <th>Poste</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="emp : ${employes}">
+                <td class="text-center">
+                    <img th:if="${emp.photo != null}" th:src="@{'/uploads/' + ${emp.photo}}" width="45" height="45" class="rounded-circle">
+                    <img th:if="${emp.photo == null}" src="https://via.placeholder.com/45" width="45" height="45" class="rounded-circle">
+                </td>
+                <td th:text="${emp.nom + ' ' + emp.prenom}"></td>
+                <td th:text="${emp.email}"></td>
+                <td th:text="${emp.departement != null ? emp.departement.nom : '-'}"></td>
+                <td th:text="${emp.poste != null ? emp.poste.intitule : '-'}"></td>
+                <td>
+                    <a th:href="@{/employes/details/{id}(id=${emp.id})}" class="btn btn-info btn-sm text-white">Détails</a>
+                    <a th:href="@{/employes/modifier/{id}(id=${emp.id})}" class="btn btn-warning btn-sm">Modifier</a>
+                    <a th:href="@{/employes/supprimer/{id}(id=${emp.id})}" class="btn btn-danger btn-sm" onclick="return confirm('Supprimer cet employé?')">Supprimer</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <nav th:if="${totalPages > 1}">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                <a class="page-link" th:href="@{/employes(page=${currentPage - 1}, keyword=${keyword}, departementId=${departementId}, posteId=${posteId}, sortField=${sortField}, sortDir=${sortDir})}">Précédent</a>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${i == currentPage} ? 'active'">
+                <a class="page-link" th:href="@{/employes(page=${i}, keyword=${keyword}, departementId=${departementId}, posteId=${posteId}, sortField=${sortField}, sortDir=${sortDir})}" th:text="${i + 1}"></a>
+            </li>
+            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                <a class="page-link" th:href="@{/employes(page=${currentPage + 1}, keyword=${keyword}, departementId=${departementId}, posteId=${posteId}, sortField=${sortField}, sortDir=${sortDir})}">Suivant</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+</body>
+</html>
