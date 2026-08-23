@@ -18,7 +18,7 @@ Avant de commencer, assurez-vous d'avoir installé :
 ## 🛠️ Configuration et Installation
 
 ### 1. Cloner le projet
-`git clone [https://github.com/siham-1-11/gestion-employes.git](https://github.com/siham-1-11/gestion-employes.git)`  
+`git clone https://github.com/siham-1-11/gestion-employes.git`  
 `cd gestion-employes`
 
 ### 2. Configuration de la Base de Données
