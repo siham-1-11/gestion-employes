@@ -7,7 +7,7 @@ Une application web complète développée avec **Spring Boot**, **Spring Securi
 
 ## 📋 Prérequis
 
-Avant de commencer, assurez-vous d'avoir installé :
+Avant de commencer, assurez-vous d'avoir installé : 
 
 - **Java JDK 17** ou supérieur
 - **MySQL Server** (ou via XAMPP / WampServer)
