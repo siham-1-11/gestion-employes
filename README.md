@@ -1,51 +1,19 @@
-# 🚀 Employee Management System - DELFYO
+# 🚀 Système de Gestion des Employés - DELFYO
 
 Un système de gestion des employés moderne et complet développé avec **Spring Boot**, **Thymeleaf**, et **Bootstrap**.
 
 ---
 
-## 📸 Aperçu de l'application (Screenshots)
+## 🛠️ Configuration de la Base de Données
 
-### 🔑 Authentification
-![Page de Connexion](screenshots/login.png)
+Dans le fichier `src/main/resources/application.properties` :
 
----
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/gestion_employes_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+spring.datasource.username=root
+spring.datasource.password=
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
-### 📊 Tableau de Bord (Dashboard)
-![Tableau de bord](screenshots/dashboard.png)
-
----
-
-### 👥 Gestion des Employés
-#### Liste des Employés
-![Liste des employés](screenshots/employes-liste.png)
-
-#### Ajouter un Employé
-![Ajouter un employé](screenshots/ajouter-employe.png)
-
----
-
-### 💼 Gestion des Postes
-#### Liste des Postes
-![Liste des postes](screenshots/postes-liste.png)
-
-#### Ajouter un Poste
-![Ajouter un poste](screenshots/ajouter-poste.png)
-
----
-
-### 🏢 Gestion des Départements
-#### Liste des Départements
-![Liste des départements](screenshots/departements-liste.png)
-
-#### Ajouter un Département
-![Ajouter un département](screenshots/ajouter-departement.png)
-
----
-
-### 📄 Exportation des Données
-#### Exportation PDF
-![Export PDF](screenshots/export-pdf.png)
-
-#### Exportation Excel
-![Export Excel](screenshots/export-excel.png)
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
